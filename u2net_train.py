@@ -46,18 +46,18 @@ def muti_bce_loss_fusion(d0, d1, d2, d3, d4, d5, d6, labels_v):
 
 # ------- 2. set the directory of training dataset --------
 
-model_name = 'u2net' #'u2netp'
+model_name = 'u2net'  #'u2netp'
 
 data_dir = os.path.join(os.getcwd(), 'train_data' + os.sep)
-tra_image_dir = os.path.join('DUTS', 'DUTS-TR', 'DUTS-TR', 'im_aug' + os.sep)
-tra_label_dir = os.path.join('DUTS', 'DUTS-TR', 'DUTS-TR', 'gt_aug' + os.sep)
+tra_image_dir = os.path.join('im_aug' + os.sep)
+tra_label_dir = os.path.join('gt_aug' + os.sep)
 
-image_ext = '.jpg'
-label_ext = '.png'
+image_ext = '.JPG'
+label_ext = '.jpg'
 
 model_dir = os.path.join(os.getcwd(), 'saved_models', model_name + os.sep)
 
-epoch_num = 100000
+epoch_num = 10
 batch_size_train = 12
 batch_size_val = 1
 train_num = 0
@@ -91,7 +91,7 @@ salobj_dataset = SalObjDataset(
         RescaleT(320),
         RandomCrop(288),
         ToTensorLab(flag=0)]))
-salobj_dataloader = DataLoader(salobj_dataset, batch_size=batch_size_train, shuffle=True, num_workers=1)
+salobj_dataloader = DataLoader(salobj_dataset, batch_size=batch_size_train, shuffle=True, num_workers=0)
 
 # ------- 3. define model --------
 # define the net
@@ -113,7 +113,16 @@ ite_num = 0
 running_loss = 0.0
 running_tar_loss = 0.0
 ite_num4val = 0
-save_frq = 2000 # save the model every 2000 iterations
+save_frq = 50  # save the model every 2000 iterations
+
+pretrained_model_path = "saved_models/pretrained/u2net.pth"
+
+if os.path.exists(pretrained_model_path):
+    # Load the pre-trained model
+    net.load_state_dict(torch.load(pretrained_model_path))
+    print(f"Pre-trained model loaded from {pretrained_model_path}")
+else:
+    print("No pre-trained model found. Training from scratch.")
 
 for epoch in range(0, epoch_num):
     net.train()

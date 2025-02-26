@@ -160,3 +160,4 @@ cython_debug/
 #.idea/
 train_data/gt_aug/*.jpg
 train_data/im_aug/*.JPG
+/.idea

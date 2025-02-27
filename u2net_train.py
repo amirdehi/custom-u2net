@@ -93,12 +93,21 @@ if model_name == 'u2net':
 elif model_name == 'u2netp':
     net = U2NETP(3, 1)
 
+# Load pretrained model if available
+pretrained_model_path = os.path.join("saved_models/pretrained", "u2net.pth")  # Change filename if needed
+
+if os.path.exists(pretrained_model_path):
+    print(f"Loading pretrained model from {pretrained_model_path}")
+    net.load_state_dict(torch.load(pretrained_model_path,
+                                   map_location=torch.device("cuda" if torch.cuda.is_available() else "cpu")))
+
 if torch.cuda.is_available():
     net.cuda()
 
 # ------- 4. define optimizer --------
 print("---define optimizer...")
-optimizer = optim.Adam(net.parameters(), lr=0.001, betas=(0.9, 0.999), eps=1e-08, weight_decay=0)
+optimizer = optim.Adam(filter(lambda p: p.requires_grad, net.parameters()),
+                       lr=0.001, betas=(0.9, 0.999), eps=1e-08, weight_decay=0)
 
 # ------- 5. training process --------
 print("---start training...")

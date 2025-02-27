@@ -7,6 +7,7 @@ import numpy as np
 import torch
 from skimage import io, transform, color
 from torch.utils.data import Dataset
+from torchvision.transforms import transforms
 
 
 # ==========================dataset load==========================
@@ -276,5 +277,8 @@ class SalObjDataset(Dataset):
 
         if self.transform:
             sample = self.transform(sample)
+
+        # Ensure image is normalized separately
+        sample["image"] = transforms.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225))(sample["image"])
 
         return sample
